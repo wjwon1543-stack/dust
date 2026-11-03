@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- 문서의 기본 언어를 한국어로 지정 -->
+<html lang="ko">
+<head>
+  <!-- 문자 인코딩을 UTF-8로 지정하여 한글 깨짐 방지 -->
+  <meta charset="UTF-8">
+  <!-- 모바일 및 다양한 기기 환경에서 반응형 레이아웃을 제공하기 위한 뷰포트 설정 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 브라우저 탭에 표시될 웹 페이지 제목 -->
+  <title>실시간 공기 신호등 - 대기오염정보</title>
+  <!-- Pretendard 웹 폰트 CDN 연결 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+  <!-- 외부 스타일시트 연결 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 전체 콘텐츠 중앙 정렬을 위한 메인 컨테이너 -->
+  <div class="app-container">
+
+    <!-- 상단 서비스 헤더 영역 -->
+    <header class="app-header">
+      <!-- 서비스 메인 로고 및 타이틀 -->
+      <h1 class="app-title">🚦 실시간 공기 신호등</h1>
+      <!-- 부제목 설명 문구 -->
+      <p class="app-subtitle">한국환경공단 에어코리아 실시간 대기질 현황</p>
+    </header>
+
+    <!-- 시도 선택 컨트롤 영역 -->
+    <section class="control-section">
+      <!-- 지역 선택 안내 라벨 -->
+      <label for="sidoSelect" class="control-label">지역 선택</label>
+      <!-- 시도를 고를 수 있는 드롭다운 메뉴 -->
+      <select id="sidoSelect" class="sido-dropdown">
+        <!-- 전국 옵션 -->
+        <option value="전국">전국</option>
+        <!-- 서울 옵션 (기본 선택) -->
+        <option value="서울" selected>서울</option>
+        <!-- 부산 옵션 -->
+        <option value="부산">부산</option>
+        <!-- 대구 옵션 -->
+        <option value="대구">대구</option>
+        <!-- 인천 옵션 -->
+        <option value="인천">인천</option>
+        <!-- 광주 옵션 -->
+        <option value="광주">광주</option>
+        <!-- 대전 옵션 -->
+        <option value="대전">대전</option>
+        <!-- 울산 옵션 -->
+        <option value="울산">울산</option>
+        <!-- 세종 옵션 -->
+        <option value="세종">세종</option>
+        <!-- 경기 옵션 -->
+        <option value="경기">경기</option>
+        <!-- 강원 옵션 -->
+        <option value="강원">강원</option>
+        <!-- 충북 옵션 -->
+        <option value="충북">충북</option>
+        <!-- 충남 옵션 -->
+        <option value="충남">충남</option>
+        <!-- 전북 옵션 -->
+        <option value="전북">전북</option>
+        <!-- 전남 옵션 -->
+        <option value="전남">전남</option>
+        <!-- 경북 옵션 -->
+        <option value="경북">경북</option>
+        <!-- 경남 옵션 -->
+        <option value="경남">경남</option>
+        <!-- 제주 옵션 -->
+        <option value="제주">제주</option>
+      </select>
+    </section>
+
+    <!-- 그 지역 대표 상태를 아주 크게 보여주는 '공기 신호등' 대형 대시보드 -->
+    <section id="trafficLightCard" class="traffic-light-card grade-loading">
+      <!-- 선택된 지역 이름 안내 -->
+      <p class="region-badge"><span id="selectedRegionName">서울</span> 대기 상태</p>
+
+      <!-- 신호등 이모지와 등급명을 크게 보여주는 상단 래퍼 -->
+      <div class="traffic-status-wrapper">
+        <!-- 신호등 이모지 (🔵좋음 / 🟢보통 / 🟠나쁨 / 🔴매우나쁨) -->
+        <span id="trafficEmoji" class="traffic-emoji">⏳</span>
+        <!-- 등급 텍스트 (좋음 / 보통 / 나쁨 / 매우나쁨) -->
+        <span id="trafficStatus" class="traffic-status">불러오는 중...</span>
+      </div>
+
+      <!-- 평균 미세먼지 수치를 아주 크게 보여주는 영역 -->
+      <div class="traffic-value-wrapper">
+        <!-- 평균 수치 텍스트 -->
+        <span id="avgPm10Value" class="traffic-value">-</span>
+        <!-- 미세먼지 측정 단위 -->
+        <span class="traffic-unit">㎍/㎥</span>
+      </div>
+
+      <!-- 나쁨 이상이면 '외출 시 마스크를 챙기세요'를 보여주는 한 줄 안내 문구 -->
+      <p id="actionTip" class="action-tip">데이터를 불러오는 중입니다...</p>
+
+      <!-- 최신 측정 시각과 측정소 요약을 안내하는 하단 정보 -->
+      <div class="traffic-meta">
+        <!-- 한국어 날짜 형식 측정 시각 표시 ('2026년 10월 28일 16시 기준') -->
+        <span id="trafficTime" class="traffic-time">-</span>
+        <!-- 구분 점 -->
+        <span class="meta-divider">•</span>
+        <!-- 측정소 기준 정보 -->
+        <span id="trafficCount" class="traffic-count">측정소 정보 집계 중</span>
+      </div>
+    </section>
+
+    <!-- 측정소 목록 섹션 -->
+    <main class="content-section">
+      <!-- 섹션 헤더 -->
+      <div class="section-header">
+        <!-- 목록 타이틀 -->
+        <h2 class="list-title">측정소별 실시간 현황</h2>
+        <!-- 안내 힌트 텍스트 -->
+        <span class="list-subtitle">등급별 배경 및 테두리 색상 반영</span>
+      </div>
+
+      <!-- 데이터를 불러오는 동안 표시되는 안내 박스 -->
+      <div id="statusMessage" class="status-message">불러오는 중...</div>
+
+      <!-- 각 측정소 카드가 격자형으로 배치될 그리드 컨테이너 -->
+      <div id="stationGrid" class="station-grid"></div>
+    </main>
+
+    <!-- 하단 데이터 출처 및 안내 푸터 영역 -->
+    <footer class="app-footer">
+      <!-- 공식 데이터 제공 출처 안내 -->
+      <p class="source-info">
+        데이터 출처:
+        <a href="https://www.airkorea.or.kr" target="_blank" rel="noopener noreferrer" class="source-link">환경부 한국환경공단(에어코리아)</a>
+        ·
+        <a href="https://www.data.go.kr" target="_blank" rel="noopener noreferrer" class="source-link">공공데이터포털</a>
+      </p>
+      <!-- 실시간 관측 데이터 유의사항 안내 문구 -->
+      <p class="disclaimer">
+        ※ 본 서비스의 대기오염 정보는 실시간 관측 데이터이며, 측정소 현장 점검이나 통신 상태 등에 따라 사후 보정될 수 있습니다.
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- 비즈니스 로직 및 신호등 UI 렌더링 스크립트 연결 -->
+  <script src="script.js"></script>
+</body>
+</html>
